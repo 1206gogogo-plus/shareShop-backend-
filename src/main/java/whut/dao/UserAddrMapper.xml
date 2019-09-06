@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="whut.dao.UserAddrDao">
+
+ <resultMap id="BaseResultMap" type="whut.pojo.UserAddr">
+    <id column="user_addr_id" jdbcType="INTEGER" property="userAddrId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="consignee_name" jdbcType="VARCHAR" property="consigneeName" />
+    <result column="postal_code" jdbcType="INTEGER" property="postalCode" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="state" jdbcType="VARCHAR" property="state" />
+    <result column="city" jdbcType="VARCHAR" property="city" />
+    <result column="first_addr" jdbcType="VARCHAR" property="firstAddr" />
+    <result column="second_addr" jdbcType="VARCHAR" property="secondAddr" />
+    <result column="is_default" jdbcType="TINYINT" property="isDefault" />
+    <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
+  </resultMap>
+  
+ <resultMap id="StateResultMap" type="whut.pojo.State">
+    <id column="state_id" jdbcType="INTEGER" property="stateId" />
+    <result column="state" jdbcType="VARCHAR" property="state" />
+    <result column="abbreviation" jdbcType="VARCHAR" property="abbreviation" />
+  </resultMap>
+  
+  <resultMap id="CityResultMap" type="whut.pojo.City">
+    <id column="city_id" jdbcType="INTEGER" property="cityId" />
+    <result column="city" jdbcType="VARCHAR" property="city" />
+    <result column="state_id" jdbcType="INTEGER" property="stateId" />
+  </resultMap>
+  
+   <select id="getListByUserId" parameterType="int" resultMap="BaseResultMap">
+         SELECT * FROM user_addr where user_id = #{id}
+   </select>
+   
+   <select id="getAddrByAddrId" parameterType="int" resultMap="BaseResultMap">
+		SELECT * FROM user_addr where user_addr_id = #{userAddrId}
+	</select>
+
+	<select id="modifyDefault" parameterType="int">
+		UPDATE user_addr SET is_default = 0
+		WHERE user_addr_id = #{userAddrId}
+	</select>
+
+	<select id="modifyAddr" parameterType="UserAddr">
+		UPDATE user_addr SET 
+		consignee_name = #{consigneeName},postal_code = #{postalCode},phone = #{phone},state = #{state},
+		city = #{city},first_addr = #{firstAddr},second_addr = #{secondAddr},is_default = #{isDefault},modified_time = now()
+		WHERE user_addr_id = #{userAddrId}
+	</select>
+	
+	<select id="addAddr" parameterType="UserAddr">
+		INSERT INTO user_addr
+		(user_id,consignee_name,postal_code,phone,state,city,first_addr,
+		second_addr,is_default)      
+		VALUES
+		(#{userId},#{consigneeName},#{postalCode},#{phone},#{state},#{city},#{firstAddr},
+		#{secondAddr},#{isDefault})
+	</select>
+	
+	<select id="delete" parameterType="int">
+		DELETE FROM user_addr where user_addr_id = #{userAddrId}
+	</select>
+	
+	<select id="getStateList" resultMap="StateResultMap">
+		SELECT * FROM state
+	</select>
+	
+	<select id="getCityList" resultMap="CityResultMap">
+		SELECT * FROM city where state_id = #{stateId}
+	</select>
+
+</mapper>
